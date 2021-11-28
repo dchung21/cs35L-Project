@@ -3,7 +3,7 @@ import React, {useState, useEffect} from 'react';
 import Post from '../Post.js'
 import {db, auth} from '../firebase.js'
 import ImageUpload from './ImageUpload.js'
-import {Link} from 'react-router-dom'
+import { useHistory } from 'react-router-dom'
 import { AuthProvider } from "../contexts/AuthContext.js";
 import {Button} from 'react-native'
 
@@ -11,6 +11,8 @@ function Homepage(curr) {
     const [posts, setPosts] = useState([]);
     const authUser = auth.currentUser;
     const [user, setUser] = useState(null);
+    let history = useHistory();
+    const redirect = () => {history.push("/Login")}
     useEffect(() => {
       if(!!authUser)
         db.collection('posts').doc(authUser.uid).collection("userPosts").orderBy('timestamp', 'desc').onSnapshot(snapshot => {
@@ -37,30 +39,37 @@ function Homepage(curr) {
       return (
         <div className="home">
           
-            <div className = "home__header">
-              <img
-                className = "home__headerImage"
-                src="https://www.instagram.com/static/images/web/mobile_nav_type_logo-2x.png/1b47f9d0e595.png"
-                alt=""
-              />
-            </div>
-            {user?.displayName ? (<div> {user.displayName} </div>):<div> No name </div>}
-            {user ? (<ImageUpload username={user.displayName}/>):
-            (<Link to= "/Login" className ="btn btn-primary">Login</Link>)}
-            {user ? (<button onClick={() => auth.signOut()}>Logout
-            </button>):
-            (<div />)}
+          <div className = "home__header">
+            <img
+              className = "home__headerImage"
+              src="https://www.instagram.com/static/images/web/mobile_nav_type_logo-2x.png/1b47f9d0e595.png"
+              alt=""
+            />
+            {user ? (
+              <div className="header__login">
+                <div> {user.displayName} </div>
+                <Button className="logout__button" onClick={() => auth.signOut()}>Logout</Button>
+              </div>
+            ): (
+              <div className="header__login">
+                <div> No name </div>
+                <Button onClick={redirect}>Login</Button>
+              </div>
+            )}
+          </div>
+          
+          {user ? (<ImageUpload username={user.displayName}/>) : (<div/>) }
             
-            {
-              posts.map(({id, post}) => (
-                <Post key={id} username={post.username} caption={post.caption} image={post.imageUrl} />
-              ))
-            }
-            {
-              posts.map(({id, post}) => (
-                <div key={id}> username={post.username} caption={post.caption} image={post.imageUrl} </div>
-              ))
-            }
+          {
+            posts.map(({id, post}) => (
+            <Post key={id} username={post.username} caption={post.caption} image={post.imageUrl} />
+            ))
+          }
+          {
+            posts.map(({id, post}) => (
+            <div key={id}> username={post.username} caption={post.caption} image={post.imageUrl} </div>
+            ))
+          }
     
         </div>
       );

@@ -12,4 +12,15 @@
   border-bottom: 1px solid lightgrey;
   object-fit: contain;
   margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.header__login {
+  display: flex;
+  object-fit: contain;
+}
+
+.logout__button {
+  object-fit: contain;
 }

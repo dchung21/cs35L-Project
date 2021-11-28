@@ -7,6 +7,7 @@ import '../styles/login.css';
 
 export default function Signup() {
     const emailRef = useRef();
+    const usernameRef = useRef();
     const passwordRef = useRef();
     const passwordConfirmRef = useRef();
     const { signup } = useAuth();
@@ -29,6 +30,7 @@ export default function Signup() {
 				const id = user.user.uid;
 				const account = {
 					uid: id,
+                    displayName: usernameRef.current.value,
 					bio: "",
                                         mile: "",
                                         squat: "",
@@ -37,7 +39,10 @@ export default function Signup() {
                                         ohp: "",
                                         steps: ""
 				}
-			
+                user.user.updateProfile({
+                    displayName: usernameRef.current.value
+                });
+
 				const fs = firebase.firestore();
 				fs.collection("users").doc(id).set(account);
 			});
@@ -63,6 +68,11 @@ export default function Signup() {
                     <Form.Label>Email</Form.Label>
                     <Form.Control type = "email" ref = {emailRef} required></Form.Control>
                 </Form.Group>
+
+                <Form.Group id = "username">
+					<Form.Label>Username</Form.Label>
+					<Form.Control type = "username" ref = {usernameRef} required></Form.Control>
+				</Form.Group>
 
                 <Form.Group id = "password">
                     <Form.Label>Password</Form.Label>
