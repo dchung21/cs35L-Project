@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import ProfileInput from './ProfileInput.js';
+//import {View, Button} from 'react-native'
 
 // firebase imports
 import firebase from 'firebase/app';
@@ -16,6 +17,8 @@ import OverlayTrigger from 'react-bootstrap/OverlayTrigger'
 import Tooltip from 'react-bootstrap/Tooltip'
 import InputGroup from 'react-bootstrap/InputGroup';
 import FormControl from 'react-bootstrap/FormControl';
+import { getDialogContentTextUtilityClass } from '@mui/material';
+import { SnapshotViewIOSComponent } from 'react-native';
 
 const DEFAULT_PICTURE = "https://firebasestorage.googleapis.com/v0/b/lproject-1bc54.appspot.com/o/images%2Fprofile_pictures%2Fdefault_picture.png?alt=media&token=71541b82-6264-46e8-b3c0-4e4c038a61ba"
 
@@ -26,7 +29,9 @@ export default function Profile() {
     const [uid, setUid] = useState("");
     const [imgUrl, setImgUrl] = useState("");
     const [userData, setUserData] = useState({});
-
+    const [following, setFollowing] = useState(false);
+    //const docRef = doc(db, "users", this.props.match.params.id);
+    //const docSnap = getDoc(docRef);
     let storage = firebase.storage();
     let fs = firebase.firestore();
 
@@ -35,7 +40,23 @@ export default function Profile() {
         firebase.auth().onAuthStateChanged(function (user) {
             if (user != null) {
                 setUid(user.uid);
-                
+
+                /*if(docSnap.exists() && this.props.match.params.id == uid){
+                    setMyProfile(true);
+                }
+                else if (docSnap.exists() && this.props.match.params.id != uid){
+                    setMyProfile(false);
+                }
+                fs.collections('following').doc(uid).get().then((snapshot) =>
+                {
+                    for(var i =0; i<snapshot.data().following.length(); i++)
+                    {
+                        if(i == this.props.match.paprams.id)
+                        {
+                            setFollowing(true);
+                        }
+                    }
+                });*/
                 storage.ref("images").child("profile_pictures").child(user.uid).getDownloadURL().then(url => {
                     setImgUrl(url); 
                 }).catch(error => {
@@ -97,6 +118,24 @@ export default function Profile() {
         setUserData(clonedObject);
     }
 
+    const handleFollow = () =>{
+        firebase.firestore().
+        collection("following")
+        .doc(firebase.auth().currentUser.uid)
+        .get().then(snapshot => {
+            snapshot.data().following.push(this.props.match.params.id);
+            firebase.firestore().collection("following")
+            .doc(firebase.auth().currentUser.uid)
+            .data().following.set(snapshot);
+        });
+
+    }
+
+    const handleUnfollow = () =>{
+        //remove this page's uid from the user's following list
+
+    }
+
     const onSave = (event) => {
         event.preventDefault();
 
@@ -108,6 +147,7 @@ export default function Profile() {
         })
     }
 
+    
 
     return (
 	    <Container className="d-flex justify-content-center align-items-center min-vh-100">
@@ -128,7 +168,11 @@ export default function Profile() {
                         onChange={handleImageChange}
 			style={{display: 'none'}}
 		    />
-
+            {/*This should load the follow or unfollow button only if its not the user's own profile */}
+            {this.props.match.params.id != uid ? <div/>: [following ? (<button onClick={() => handleUnfollow()}>Unfollow
+            </button>):
+            (<button onClick={() => handleFollow()}>Follow
+            </button>)]}
                     <ProfileInput label="Mile time" placeholder="8:00" field="mile" val={userData.mile} onChange ={inputChange} />
                     <ProfileInput label="Squat" placeholder="135" field="squat" val={userData.squat} onChange = {inputChange} />
                     <ProfileInput label="Bench Press" placeholder="135" field="bench" val={userData.bench} onChange = {inputChange} />
@@ -141,8 +185,10 @@ export default function Profile() {
                         Save
                     </Button>
 		    </div>
+            
 			</Form>
 	        </div>
 	    </Container>
+        
 	);
 }

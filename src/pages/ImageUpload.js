@@ -34,11 +34,12 @@ function ImageUpload({username}) {
                     .child(image.name)
                     .getDownloadURL()
                     .then(url => {
-                        db.collection("posts").doc(auth.currentUser.uid).collection("userPosts").add({
+                        db.collection("posts").add({
                             //timestamp: db.FieldValue.serverTimestamp(),
                             caption: caption,
                             imageUrl: url,
-                            username: username
+                            username: username,
+                            uid: auth.currentUser.uid
 
                         });
 
