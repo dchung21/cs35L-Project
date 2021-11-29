@@ -23,19 +23,19 @@ export default function Homepage(curr) {
     useEffect(() => {
          // get posts from user with id and update the posts state
         setUser(auth.currentUser);
-        function fetchPosts(id) {
+        /*function fetchPosts(id) {
              fs.collection("posts").doc(id).collection("userPosts").get().then((snapshot) => {
                   snapshot.forEach(function (doc) {
-                      let clonedPost = JSON.parse(JSON.stringify(posts));
+                      let clonedPost = JSON.parse(  JSON.stringify(posts));
                       clonedPost.push(doc.data());
                       setPosts(clonedPost);
                       console.log(posts);
                   });
              });
-         }
+         }*/
 
         // main routine to get posts from ourselves and people we follow
-         async function fetchData() {
+        /* async function fetchData() {
             firebase.auth().onAuthStateChanged( function (user) {
                 if (user != null) {
                     
@@ -55,17 +55,32 @@ export default function Homepage(curr) {
                 }
             });
          }
+*/
+        //fetchData();
+        if (user != null) {
+            let followingUsers = [];
+            // retrieve posts from people we follow
+            fs.collection("following").doc(user.uid).onSnapshot((doc) => {
+                followingUsers = doc.data().following;
+                followingUsers.push(user.uid)});
 
-        fetchData();
-    }, []);
+                fs.collection("posts").where("uid", 'in', followingUsers).onSnapshot((snapshot) => {
+                    setPosts(snapshot.docs.map(doc1 => ({
+                        id: doc1.id,
+                        post: doc1.data()
+                })));
+            });
+        
+        }
+    }, [], [posts]);
 
 
-    let displayPost = [];
+    /*let displayPost = [];
 
     posts.forEach((p, id) => {
         displayPost.push(<Post key = {id} postId={id} user={user} caption = {p.caption} image = {p.imageUrl} />);
     });
-    console.log(displayPost);
+    console.log(displayPost);*/
 
     return (
         <div className="home">
@@ -79,8 +94,12 @@ export default function Homepage(curr) {
             </div>
             {user?.displayName ? (<div> {user.displayName} </div>):<div> No name </div>}
             {user ? (<ImageUpload username={user.displayName}/>):
-            (<Link to= "/Login" className ="btn btn-primary">Login</Link>)}
-            {displayPost}
+            (<Link to= "/login" className ="btn btn-primary">Login</Link>)}
+            {user ? (<Link to= "/login" className ="btn btn-primary">Logout</Link>):<div/>}
+            {/*displayPost*/ posts.map((post) => (
+            <Post key={user.uid} postId={post.uid} user={user} username={post.username} caption={post.caption} image={post.imageUrl} />
+            ))}
+
                  
     
         </div>

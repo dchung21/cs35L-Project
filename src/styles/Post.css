@@ -23,7 +23,7 @@
 .post_comments{
     padding: 15px;
 }
-.comment_input {
+/*.comment_input {
     flex: 1;
     border: none;
     padding: 8px;
@@ -34,4 +34,4 @@
     flex:0;
     border: none;
     border-top: 1px solid lightgrey;
-}
+}*/
