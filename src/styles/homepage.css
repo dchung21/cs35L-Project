@@ -16,9 +16,13 @@
   justify-content: space-between;
 }
 
+.home__headerImage {
+  object-fit: contain;
+}
+
 .header__login {
   display: flex;
-  object-fit: contain;
+  flex-direction: row;
 }
 
 .logout__button {

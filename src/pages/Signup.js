@@ -30,7 +30,7 @@ export default function Signup() {
 				const id = user.user.uid;
 				const account = {
 					uid: id,
-                    displayName: usernameRef.current.value,
+                    username: usernameRef.current.value,
 					bio: "",
                                         mile: "",
                                         squat: "",
