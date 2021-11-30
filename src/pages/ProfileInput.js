@@ -17,6 +17,7 @@ export default function ProfileInput(props) {
                 aria-describedby="basic-addon1"
                 defaultValue={props.val}
                 onChange = {(e) => props.onChange(e, props.field)}
+                readOnly = {!props.readOnly}
             />
         </InputGroup> 
         </div>

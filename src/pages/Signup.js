@@ -40,6 +40,7 @@ export default function Signup() {
 			
 				const fs = firebase.firestore();
 				fs.collection("users").doc(id).set(account);
+                fs.collection("following").doc(id).set({followers: [], followers: []});
 			});
             history.push("/profile");
         } catch {

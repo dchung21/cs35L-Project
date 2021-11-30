@@ -35,7 +35,7 @@ function App() {
           <Switch>
             <Route path = "/login" component = {Login} />
             <Route path = "/signup" component = {Signup} />
-            <PrivateRoute path = "/profile" component = {Profile} />
+            <PrivateRoute path = "/profile/:userId" component = {Profile} />
             <PrivateRoute path = "/homepage" component = {Homepage} />
             <Route path="/">
                 {user ? <Redirect to="/homepage"/> : <Redirect to="/login"/>}
