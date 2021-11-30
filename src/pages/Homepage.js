@@ -22,7 +22,7 @@ export default function Homepage(curr) {
 
     useEffect(() => {
          // get posts from user with id and update the posts state
-        setUser(auth.currentUser);
+        /*setUser(auth.currentUser);
         /*function fetchPosts(id) {
              fs.collection("posts").doc(id).collection("userPosts").get().then((snapshot) => {
                   snapshot.forEach(function (doc) {
@@ -35,9 +35,8 @@ export default function Homepage(curr) {
          }*/
 
         // main routine to get posts from ourselves and people we follow
-        /* async function fetchData() {
-            firebase.auth().onAuthStateChanged( function (user) {
-                if (user != null) {
+        /*async function fetchData() {
+            
                     
                     // retrieve posts from people we follow
                     fs.collection("following").doc(user.uid).get().then((doc) => {
@@ -55,24 +54,43 @@ export default function Homepage(curr) {
                 }
             });
          }
-*/
-        //fetchData();
-        if (user != null) {
-            let followingUsers = [];
-            // retrieve posts from people we follow
-            fs.collection("following").doc(user.uid).onSnapshot((doc) => {
-                followingUsers = doc.data().following;
-                followingUsers.push(user.uid)});
 
-                fs.collection("posts").where("uid", 'in', followingUsers).onSnapshot((snapshot) => {
-                    setPosts(snapshot.docs.map(doc1 => ({
-                        id: doc1.id,
-                        post: doc1.data()
-                })));
-            });
+        fetchData();*/
         
-        }
-    }, [], [posts]);
+        let followingUsers = [];
+        
+
+                    
+                    // retrieve posts from people we follow
+                    firebase.auth().onAuthStateChanged( (authUser) => {
+                         if(authUser)
+                         {
+                            setUser(authUser)
+                         }
+                        fs.collection("following").doc(user.uid).get().then((doc) => {
+                        followingUsers = doc.data().following;
+                        followingUsers.push(user.uid);
+
+                        fs.collection("posts").orderBy("timestamp", "desc").where("uid", 'in', followingUsers).onSnapshot((snapshot) => {
+                            setPosts(snapshot.docs.map(doc1 => ({
+                                id: doc1.id,
+                                post: doc1.data()
+                        })));
+                            });
+                            //setPosts(p);
+                        });
+                    });
+
+                
+            
+         
+
+        
+
+
+        
+    }, [posts]);
+
 
 
     /*let displayPost = [];
@@ -98,9 +116,21 @@ export default function Homepage(curr) {
             {user ? (<Link to= "/login" className ="btn btn-primary">Logout</Link>):<div/>}
             {/*displayPost*/ posts.map((post) => (
             <Post key={user.uid} postId={post.uid} user={user} username={post.username} caption={post.caption} image={post.imageUrl} />
+            
             ))}
 
-                 
+        {posts.map(({ id, post }) => (
+              <Post
+                user={user}
+                postId={post.uid}
+                key={id}
+                postId={id}
+                user={user}
+                username={post.username}
+                caption={post.caption}
+                imageUrl={post.imageUrl}
+              />
+            ))}     
     
         </div>
       );
